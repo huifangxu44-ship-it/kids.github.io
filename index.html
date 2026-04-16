@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小苗启蒙乐园</title>
+<style>
+  /* ===== 基础重置 ===== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; background: #fffbf0; color: #333; }
+
+  /* ===== 顶部导航 ===== */
+  nav {
+    background: linear-gradient(135deg, #ff8c42, #ffb347);
+    padding: 0 20px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  nav ul { display: flex; list-style: none; gap: 4px; }
+  nav ul li a {
+    display: block; padding: 16px 20px;
+    color: white; text-decoration: none; font-size: 16px; font-weight: bold;
+    border-radius: 4px; transition: background 0.2s;
+  }
+  nav ul li a:hover, nav ul li a.active { background: rgba(255,255,255,0.25); }
+  .logo { font-size: 22px; padding: 12px 20px 12px 0; color: white; font-weight: bold; white-space: nowrap; }
+  nav .nav-inner { display: flex; align-items: center; max-width: 900px; margin: 0 auto; }
+
+  /* ===== 页面通用 ===== */
+  .page { display: none; max-width: 900px; margin: 0 auto; padding: 30px 20px 60px; }
+  .page.active { display: block; }
+
+  /* ===== 首页 ===== */
+  .hero {
+    text-align: center; padding: 50px 20px 40px;
+    background: linear-gradient(135deg, #fff3cd, #ffe0a3);
+    border-radius: 20px; margin-bottom: 36px;
+  }
+  .hero h1 { font-size: 42px; color: #e07c00; margin-bottom: 12px; }
+  .hero p { font-size: 18px; color: #666; line-height: 1.8; }
+  .emoji-big { font-size: 60px; display: block; margin-bottom: 10px; }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 18px; }
+  .card {
+    background: white; border-radius: 16px; padding: 28px 16px; text-align: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08); cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.14); }
+  .card .icon { font-size: 40px; margin-bottom: 12px; }
+  .card h3 { font-size: 17px; color: #444; }
+  .card p { font-size: 13px; color: #888; margin-top: 6px; }
+
+  /* ===== 趣味启蒙 Tab ===== */
+  .tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 10px 22px; border: 2px solid #ffb347; border-radius: 30px;
+    background: white; color: #ff8c42; font-size: 15px; font-weight: bold;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .tab-btn.active, .tab-btn:hover { background: #ff8c42; color: white; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ===== 识字卡片 ===== */
+  .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 14px; }
+  .char-card {
+    background: linear-gradient(135deg, #fff3cd, #ffe8a0);
+    border-radius: 14px; padding: 18px 8px; text-align: center;
+    font-size: 36px; font-weight: bold; color: #c06000;
+    cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  }
+  .char-card:hover { transform: scale(1.08); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+
+  /* ===== 算数口诀 ===== */
+  .math-list { list-style: none; display: grid; gap: 12px; }
+  .math-list li {
+    background: white; border-radius: 12px; padding: 16px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .math-num { font-size: 28px; font-weight: bold; color: #ff8c42; min-width: 40px; text-align: center; }
+  .math-text strong { font-size: 16px; color: #333; display: block; margin-bottom: 4px; }
+  .math-text span { font-size: 13px; color: #888; }
+
+  /* ===== 故事卡片 ===== */
+  .story-card {
+    background: white; border-radius: 16px; padding: 24px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.08); margin-bottom: 18px;
+  }
+  .story-card h3 { font-size: 20px; color: #e07c00; margin-bottom: 10px; }
+  .story-card p { font-size: 15px; color: #555; line-height: 1.9; }
+
+  /* ===== 儿歌卡片 ===== */
+  .song-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+  .song-card {
+    background: linear-gradient(135deg, #e8f4fd, #c8e6fa);
+    border-radius: 16px; padding: 28px 20px; text-align: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  }
+  .song-card .note { font-size: 42px; margin-bottom: 10px; }
+  .song-card h3 { font-size: 18px; color: #2475b0; margin-bottom: 8px; }
+  .song-card p { font-size: 13px; color: #555; line-height: 1.8; }
+
+  /* ===== 育儿指南 ===== */
+  .guide-card {
+    background: white; border-radius: 16px; padding: 24px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.08); margin-bottom: 18px;
+    display: flex; gap: 18px; align-items: flex-start;
+  }
+  .guide-icon { font-size: 40px; min-width: 50px; }
+  .guide-card h3 { font-size: 18px; color: #e07c00; margin-bottom: 8px; }
+  .guide-card p { font-size: 15px; color: #555; line-height: 1.8; }
+
+  /* ===== 关于我们 ===== */
+  .about-hero {
+    text-align: center; padding: 40px 20px;
+    background: linear-gradient(135deg, #e8f4fd, #c8e6fa);
+    border-radius: 20px; margin-bottom: 30px;
+  }
+  .about-hero h2 { font-size: 30px; color: #2475b0; margin-bottom: 10px; }
+  .about-hero p { font-size: 16px; color: #555; line-height: 1.9; max-width: 600px; margin: 0 auto; }
+  .value-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .value-card {
+    background: white; border-radius: 16px; padding: 28px 16px; text-align: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  }
+  .value-card .vicon { font-size: 36px; margin-bottom: 12px; }
+  .value-card h4 { font-size: 16px; color: #444; margin-bottom: 6px; }
+  .value-card p { font-size: 13px; color: #888; line-height: 1.7; }
+
+  /* ===== 弹窗 ===== */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 200;
+    justify-content: center; align-items: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: white; border-radius: 24px; padding: 36px 32px;
+    max-width: 360px; width: 90%; text-align: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    animation: popIn 0.22s ease;
+  }
+  @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal .modal-char { font-size: 72px; font-weight: bold; color: #c06000; margin-bottom: 8px; }
+  .modal .modal-pinyin { font-size: 24px; color: #ff8c42; margin-bottom: 10px; }
+  .modal .modal-meaning { font-size: 16px; color: #555; margin-bottom: 6px; line-height: 1.8; }
+  .modal .modal-sentence { font-size: 14px; color: #888; border-top: 1px solid #eee; padding-top: 12px; margin-top: 8px; }
+  .modal-close {
+    margin-top: 20px; padding: 10px 32px; background: #ff8c42;
+    color: white; border: none; border-radius: 30px; font-size: 15px;
+    cursor: pointer; font-weight: bold;
+  }
+  .modal-close:hover { background: #e07c00; }
+
+  /* ===== 页面标题 ===== */
+  .page-title { font-size: 26px; color: #e07c00; margin-bottom: 8px; font-weight: bold; }
+  .page-sub { font-size: 15px; color: #888; margin-bottom: 24px; }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 600px) {
+    nav ul li a { padding: 12px 12px; font-size: 14px; }
+    .logo { font-size: 18px; }
+    .hero h1 { font-size: 30px; }
+    .char-card { font-size: 28px; padding: 14px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">🌱 小苗启蒙乐园</div>
+    <ul>
+      <li><a href="#" class="active" onclick="showPage('home', this)">🏠 首页</a></li>
+      <li><a href="#" onclick="showPage('learn', this)">🎨 趣味启蒙</a></li>
+      <li><a href="#" onclick="showPage('guide', this)">📖 育儿指南</a></li>
+      <li><a href="#" onclick="showPage('about', this)">💛 关于我们</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ========== 首页 ========== -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <span class="emoji-big">🌟</span>
+    <h1>小苗启蒙乐园</h1>
+    <p>专为 3-6 岁小朋友设计<br>快乐识字 · 趣味算数 · 温馨故事 · 经典儿歌</p>
+  </div>
+  <div class="card-grid">
+    <div class="card" onclick="showPage('learn', null); showTab('zi')">
+      <div class="icon">🔤</div>
+      <h3>基础识字</h3>
+      <p>20 个学前常用汉字</p>
+    </div>
+    <div class="card" onclick="showPage('learn', null); showTab('math')">
+      <div class="icon">🔢</div>
+      <h3>趣味算数</h3>
+      <p>10 以内口诀轻松学</p>
+    </div>
+    <div class="card" onclick="showPage('learn', null); showTab('story')">
+      <div class="icon">🌙</div>
+      <h3>睡前故事</h3>
+      <p>3 篇温馨小故事</p>
+    </div>
+    <div class="card" onclick="showPage('learn', null); showTab('song')">
+      <div class="icon">🎵</div>
+      <h3>经典儿歌</h3>
+      <p>3 首经典儿歌歌名</p>
+    </div>
+    <div class="card" onclick="showPage('guide', null)">
+      <div class="icon">👨‍👩‍👧</div>
+      <h3>育儿指南</h3>
+      <p>5 条实用启蒙小知识</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 趣味启蒙 ========== -->
+<div id="page-learn" class="page">
+  <h2 class="page-title">🎨 趣味启蒙</h2>
+  <p class="page-sub">点击卡片，学习更多！</p>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('zi')">🔤 基础识字</button>
+    <button class="tab-btn" onclick="showTab('math')">🔢 趣味算数</button>
+    <button class="tab-btn" onclick="showTab('story')">🌙 睡前故事</button>
+    <button class="tab-btn" onclick="showTab('song')">🎵 经典儿歌</button>
+  </div>
+
+  <!-- 识字 -->
+  <div id="tab-zi" class="tab-content active">
+    <div class="char-grid" id="charGrid"></div>
+  </div>
+
+  <!-- 算数 -->
+  <div id="tab-math" class="tab-content">
+    <ul class="math-list" id="mathList"></ul>
+  </div>
+
+  <!-- 故事 -->
+  <div id="tab-story" class="tab-content">
+    <div class="story-card">
+      <h3>🐰 小兔找朋友</h3>
+      <p>小兔白白独自住在树林边，总是一个人玩，感觉很孤单。一天，它鼓起勇气去敲隔壁松鼠的门："你愿意和我一起玩吗？"松鼠高兴地点点头。两个好朋友从此一起采果子、捉迷藏，再也不孤单了。<br><br>
+      <strong>小朋友，主动打招呼，就能交到新朋友哦！</strong></p>
+    </div>
+    <div class="story-card">
+      <h3>🌙 月亮船</h3>
+      <p>月亮弯弯的，像一艘小船停在夜空里。小明每晚望着它，问妈妈："月亮船会去哪里？"妈妈说："月亮船载着星星，送甜甜的梦给每个小朋友。"小明笑着闭上眼睛，果然梦见自己坐着月亮船，飞过云朵，飞过彩虹，好开心！<br><br>
+      <strong>晚上好好睡觉，月亮船会带来美梦！</strong></p>
+    </div>
+    <div class="story-card">
+      <h3>🌻 种太阳花</h3>
+      <p>小花在院子里种下一粒种子，每天给它浇水、晒太阳、说悄悄话。过了很多天，一朵金黄色的大花开了！邻居们都说好漂亮。小花骄傲地说："这是我用爱心种出来的！"<br><br>
+      <strong>用心做一件事，就能收获美丽的结果！</strong></p>
+    </div>
+  </div>
+
+  <!-- 儿歌 -->
+  <div id="tab-song" class="tab-content">
+    <div class="song-grid">
+      <div class="song-card">
+        <div class="note">⭐</div>
+        <h3>《小星星》</h3>
+        <p>一闪一闪亮晶晶<br>满天都是小星星<br>挂在天上放光明<br>好像许多小眼睛</p>
+      </div>
+      <div class="song-card">
+        <div class="note">🐯</div>
+        <h3>《两只老虎》</h3>
+        <p>两只老虎，两只老虎<br>跑得快，跑得快<br>一只没有耳朵<br>一只没有尾巴<br>真奇怪，真奇怪</p>
+      </div>
+      <div class="song-card">
+        <div class="note">🦆</div>
+        <h3>《数鸭子》</h3>
+        <p>门前大桥下<br>游过一群鸭<br>快来快来数一数<br>二四六七八<br>咕嘎咕嘎，真呀真多鸭</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 育儿指南 ========== -->
+<div id="page-guide" class="page">
+  <h2 class="page-title">📖 育儿指南</h2>
+  <p class="page-sub">5 条简单实用的幼儿启蒙小知识，送给每一位用心的家长</p>
+
+  <div class="guide-card">
+    <div class="guide-icon">🗣️</div>
+    <div>
+      <h3>多说多读，语言启蒙从对话开始</h3>
+      <p>每天和孩子多说话、多读绘本。家长说的每一句话都是孩子学语言的素材。睡前读 5 分钟故事，坚持一个月，词汇量会明显增加。</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-icon">🎮</div>
+    <div>
+      <h3>游戏就是学习，让玩耍更有意义</h3>
+      <p>3-6 岁的孩子通过游戏认识世界。可以把数数、认字融入过家家、积木、捉迷藏等游戏中，学习效果远比坐着背书好。</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-icon">🌅</div>
+    <div>
+      <h3>规律作息，给大脑最好的保护</h3>
+      <p>充足的睡眠是大脑发育的关键。建议每晚 9 点前入睡，午睡 1-1.5 小时。规律的作息让孩子情绪稳定，学习更专注。</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-icon">👏</div>
+    <div>
+      <h3>正面鼓励，建立孩子的自信心</h3>
+      <p>当孩子做对了，及时说"你真棒！""你做到了！"。少批评多鼓励，表扬孩子的努力而非结果，让孩子敢于尝试、不怕犯错。</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-icon">📚</div>
+    <div>
+      <h3>亲子共读，每晚 10 分钟胜过百堂课</h3>
+      <p>每天睡前和孩子一起读一本小书。不必求快，边读边聊书里的画面和故事。共读习惯从小培养，是送给孩子最好的礼物。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 关于我们 ========== -->
+<div id="page-about" class="page">
+  <div class="about-hero">
+    <h2>🌱 关于小苗启蒙乐园</h2>
+    <p>我们相信，每一个孩子都是一颗充满潜力的小种子。小苗启蒙乐园专为 3-6 岁学前儿童设计，用有趣的方式帮助孩子快乐启蒙，让学习成为一件开心的事。</p>
+  </div>
+  <div class="value-grid">
+    <div class="value-card">
+      <div class="vicon">😄</div>
+      <h4>快乐为先</h4>
+      <p>寓教于乐，让孩子在笑声中学习成长</p>
+    </div>
+    <div class="value-card">
+      <div class="vicon">🎯</div>
+      <h4>简单易用</h4>
+      <p>无需注册，打开即用，操作极简</p>
+    </div>
+    <div class="value-card">
+      <div class="vicon">💡</div>
+      <h4>科学启蒙</h4>
+      <p>内容符合学前认知规律，循序渐进</p>
+    </div>
+    <div class="value-card">
+      <div class="vicon">🤝</div>
+      <h4>亲子同行</h4>
+      <p>鼓励家长与孩子一起互动，共同成长</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 汉字弹窗 ========== -->
+<div class="modal-overlay" id="charModal" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-char" id="mChar"></div>
+    <div class="modal-pinyin" id="mPinyin"></div>
+    <div class="modal-meaning" id="mMeaning"></div>
+    <div class="modal-sentence" id="mSentence"></div>
+    <button class="modal-close" onclick="closeModal()">知道了 👍</button>
+  </div>
+</div>
+
+<script>
+// ===== 页面切换 =====
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else {
+    const map = { home:'首页', learn:'趣味启蒙', guide:'育儿指南', about:'关于我们' };
+  }
+  window.scrollTo(0, 0);
+  return false;
+}
+
+// ===== Tab 切换 =====
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  const btns = document.querySelectorAll('.tab-btn');
+  const map = { zi: 0, math: 1, story: 2, song: 3 };
+  if (btns[map[name]]) btns[map[name]].classList.add('active');
+  // 切换到趣味启蒙页面
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-learn').classList.add('active');
+  document.querySelectorAll('nav a').forEach((a, i) => { a.classList.remove('active'); if (i === 1) a.classList.add('active'); });
+}
+
+// ===== 汉字数据 =====
+const chars = [
+  { c:'人', p:'rén', m:'人是地球上最聪明的生物。', s:'例：一个人、两个人' },
+  { c:'口', p:'kǒu', m:'口就是嘴巴，用来吃东西、说话。', s:'例：开口、入口' },
+  { c:'手', p:'shǒu', m:'手有五根手指，可以做很多事。', s:'例：左手、右手' },
+  { c:'目', p:'mù', m:'目就是眼睛，用来看东西。', s:'例：目光、眼目' },
+  { c:'日', p:'rì', m:'日就是太阳，白天会发光。', s:'例：日出、日落' },
+  { c:'月', p:'yuè', m:'月就是月亮，晚上会发光。', s:'例：月亮、月光' },
+  { c:'山', p:'shān', m:'山很高，可以爬山看风景。', s:'例：大山、山顶' },
+  { c:'水', p:'shuǐ', m:'水是透明的，我们每天都要喝水。', s:'例：喝水、河水' },
+  { c:'火', p:'huǒ', m:'火会发光发热，要注意安全。', s:'例：火苗、火焰' },
+  { c:'木', p:'mù', m:'木来自大树，可以做桌子椅子。', s:'例：木头、木板' },
+  { c:'大', p:'dà', m:'大是很大的意思，比小的东西更大。', s:'例：大象、大树' },
+  { c:'小', p:'xiǎo', m:'小是很小的意思，比大的东西更小。', s:'例：小猫、小鸟' },
+  { c:'上', p:'shàng', m:'上是在高处的意思。', s:'例：上面、上山' },
+  { c:'下', p:'xià', m:'下是在低处的意思。', s:'例：下面、下雨' },
+  { c:'一', p:'yī', m:'一是最小的数字。', s:'例：一只猫、第一' },
+  { c:'二', p:'èr', m:'二是数字，比一多一个。', s:'例：二月、第二' },
+  { c:'三', p:'sān', m:'三是数字，一、二、三。', s:'例：三角形、三天' },
+  { c:'心', p:'xīn', m:'心是感受情绪的地方，也代表爱。', s:'例：开心、爱心' },
+  { c:'花', p:'huā', m:'花很漂亮，有各种颜色和香气。', s:'例：鲜花、花朵' },
+  { c:'鸟', p:'niǎo', m:'鸟有翅膀，会在天上飞。', s:'例：小鸟、鸟窝' },
+];
+
+// 渲染识字卡
+const grid = document.getElementById('charGrid');
+chars.forEach((item, i) => {
+  const div = document.createElement('div');
+  div.className = 'char-card';
+  div.textContent = item.c;
+  div.onclick = () => openModal(i);
+  grid.appendChild(div);
+});
+
+// 弹窗
+function openModal(i) {
+  const item = chars[i];
+  document.getElementById('mChar').textContent = item.c;
+  document.getElementById('mPinyin').textContent = item.p;
+  document.getElementById('mMeaning').textContent = item.m;
+  document.getElementById('mSentence').textContent = item.s;
+  document.getElementById('charModal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('charModal').classList.remove('show');
+}
+
+// ===== 算数口诀数据 =====
+const mathData = [
+  { n:'1+1', t:'1个苹果加1个苹果', d:'一共有 2 个苹果，一起吃吧！' },
+  { n:'2+1', t:'2只小猫加1只小猫', d:'一共有 3 只小猫，喵喵喵！' },
+  { n:'3+2', t:'3颗星星加2颗星星', d:'一共有 5 颗星星，真漂亮！' },
+  { n:'4+1', t:'4朵花加1朵花', d:'一共有 5 朵花，送给妈妈！' },
+  { n:'5+2', t:'5只鸭子加2只鸭子', d:'一共有 7 只鸭子，嘎嘎嘎！' },
+  { n:'6+2', t:'6颗糖加2颗糖', d:'一共有 8 颗糖，甜甜的！' },
+  { n:'7+2', t:'7个气球加2个气球', d:'一共有 9 个气球，飞起来！' },
+  { n:'8+2', t:'8只小鸟加2只小鸟', d:'一共有 10 只小鸟，叽叽叽！' },
+  { n:'5-2', t:'5个西瓜吃掉2个', d:'还剩 3 个西瓜，继续吃！' },
+  { n:'10-3', t:'10朵云跑走了3朵', d:'天上还剩 7 朵云，白白的！' },
+];
+
+const mathList = document.getElementById('mathList');
+mathData.forEach(item => {
+  const li = document.createElement('li');
+  li.innerHTML = `<div class="math-num">${item.n}</div>
+    <div class="math-text"><strong>${item.t}</strong><span>${item.d}</span></div>`;
+  mathList.appendChild(li);
+});
+
+// ===== 导航高亮同步 =====
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelectorAll('nav a').forEach(x => x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
